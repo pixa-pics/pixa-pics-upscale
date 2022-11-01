@@ -1,0 +1,14 @@
+{
+  "name": "pixa-pics-upscale",
+  "version": "0.0.1",
+  "description": "Upscale NFTs",
+  "repository": "https://github.com/pixa-pics/pixa-pics-upscale",
+  "readme": "https://github.com/pixa-pics/pixa-pics-upscale",
+  "main": "/index.js",
+  "dependencies": {
+    "workerpool": "~6.3.0"
+  },
+  "devDependencies": {},
+  "author": "VIPERTECH",
+  "license": "MIT"
+}
