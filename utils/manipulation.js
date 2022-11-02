@@ -1,45 +1,5 @@
 import pool from "./pool";
 var AFunction = Object.getPrototypeOf(async function(){}).constructor;
-window.manipulation = {};
-window.file_to_base64_process_function = new AFunction(`var t = function(file) {
-    "use strict";
-    try {
-    
-        if (typeof FileReaderSync === "undefined") {
-            throw new Error("Impossible to create FileReaderSync in this web environment.");
-        }
-        
-        return new Promise(function(resolve, _) {
-            resolve(FileReaderSync.readAsDataURL(file));
-        });
-    } catch(error) {
-    
-        return new Promise(function(resolve, _) {
-            var reader = new FileReader();
-            reader.onload = function(){ resolve(reader.result)};
-            reader.onerror = function(){ var u = URL.createObjectURL(file); resolve(u); URL.revokeObjectURL(u);};
-            reader.readAsDataURL(file);
-        });
-    }
-}; return t;`)();
-
-
-window.manipulation.file_to_base64 = function(file) {
-
-    if(pool !== null) {
-
-        return pool.exec(window.file_to_base64_process_function, [
-            file
-        ]).catch((e) => {
-
-            return window.file_to_base64_process_function(file);
-        }).timeout(5 * 1000);
-
-    }else {
-
-        return window.file_to_base64_process_function(file);
-    }
-};
 
 window.base64_sanitize_process_function = new AFunction(`var t = function(base64) {
     "use strict";
@@ -60,7 +20,7 @@ window.base64_sanitize_process_function = new AFunction(`var t = function(base64
     });
 }; return t;`)();
 
-window.manipulation.base64_sanitize = function(base64) {
+window.base64_sanitize = function(base64) {
 
     if(pool !== null) {
 
@@ -94,7 +54,7 @@ window.base64_to_bitmap_process_function = new AFunction(`var t = function(base6
 
 }; return t;`)();
 
-window.manipulation.base64_to_bitmap = function(base64) {
+window.base64_to_bitmap = function(base64) {
 
 
 
@@ -114,8 +74,9 @@ window.manipulation.base64_to_bitmap = function(base64) {
 
 };
 
-window.manipulation.bitmap_to_imagedata = function(bitmap, resize_to =  1920*1080) {
+window.bitmap_to_imagedata = function(bitmap, resize_to) {
 
+        resize_to = resize_to || bitmap.width * bitmap.height;
         let scale = 1;
         while (Math.round(bitmap.width * scale) * Math.round(bitmap.height * scale) > resize_to) { scale -= 0.01; }
 
@@ -183,8 +144,9 @@ window.imagedata_to_base64_process_function = new AFunction(`var t = function(im
 
 }; return t;`)();
 
-window.manipulation.imagedata_to_base64 = function(imagedata, type= "image/png") {
+window.imagedata_to_base64 = function(imagedata, type) {
 
+        type = type || "image/png";
         if(pool !== null) {
 
             return pool.exec(window.imagedata_to_base64_process_function, [
@@ -201,4 +163,9 @@ window.manipulation.imagedata_to_base64 = function(imagedata, type= "image/png")
 
 };
 
-export default window.manipulation;
+module.exports = {
+    base64_sanitize: window.base64_sanitize,
+    base64_to_bitmap: window.base64_to_bitmap,
+    bitmap_to_imagedata: window.bitmap_to_imagedata,
+    imagedata_to_base64: window.imagedata_to_base64
+};
